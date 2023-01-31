@@ -1,6 +1,6 @@
 {
   "functions": {
-    "index.js": {
+    "src/index.js": {
       "runtime": "@now/node@1.6.1"
     }
   },
