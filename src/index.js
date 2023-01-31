@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const v1RouterAuth = require("./v1/routes/auth");
 
-const mongoString = process.env.DATABASE_URL;
+const mongoString = process.env.MONGO_URL;
 const app = express();
 const PORT = process.env.PORT || 3000;
 
