@@ -1,11 +1,12 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const v1RouterAuth = require("./v1/routes/auth");
 
 const mongoString = process.env.MONGO_URL;
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // connect to mongoose
 mongoose.connect(mongoString);
@@ -20,7 +21,7 @@ database.once("connected", () => {
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors());
 // For testing purposes
 app.get("/", (req, res) => {
   res.send("<h2>It's Working Api!</h2>");
