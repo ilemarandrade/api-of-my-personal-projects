@@ -1,11 +1,11 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, default: mongoose } = require("mongoose");
 
 const User = new Schema({
   name: {
     type: String,
     required: true,
   },
-  lastName: {
+  lastname: {
     type: String,
     default: "",
   },
@@ -16,6 +16,14 @@ const User = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  document: {
+    type: String,
+    required: String,
+  },
+  phone: {
+    type: String,
+    default: "",
   },
 });
 
