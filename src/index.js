@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const v1RouterAuth = require("./v1/routes/auth");
+const v1RouterWallet = require("./v1/routes/wallet");
+const { verifyUserToken } = require("./midlewares/verify_user_token");
 
 const mongoString = process.env.MONGO_URL;
 const app = express();
@@ -29,6 +31,7 @@ app.get("/", (req, res) => {
 
 // *** call to version 1 routes ***
 app.use("/api/v1/auth", v1RouterAuth);
+app.use("/api/v1/wallet", verifyUserToken, v1RouterWallet);
 
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
