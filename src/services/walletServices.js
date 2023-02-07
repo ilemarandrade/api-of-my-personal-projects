@@ -25,6 +25,29 @@ const check_balance = async (user_id) => {
   }
 };
 
+const movements = async (user_id) => {
+  try {
+    const acount = await AcountModel.findOne({ user_id });
+    if (acount) {
+      return {
+        statusCode: 200,
+        response: { movements: acount.movements },
+      };
+    } else {
+      return {
+        statusCode: 401,
+        response: { message: "authorization incorrect" },
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 400,
+      response: { message: "An unexpected error has occurred" },
+    };
+  }
+};
+
 const recharge = async (user_id, data) => {
   try {
     const { amount, concept } = data;
@@ -93,4 +116,5 @@ module.exports = {
   check_balance,
   recharge,
   pay,
+  movements,
 };

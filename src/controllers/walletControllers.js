@@ -7,6 +7,12 @@ const check_balance = async (req, res) => {
   return res.status(statusCode).send(response);
 };
 
+const movements = async (req, res) => {
+  const { user } = req.user;
+  const { statusCode, response } = await walletServices.movements(user._id);
+  return res.status(statusCode).send(response);
+};
+
 const recharge = async (req, res) => {
   const data = req.body;
   const { user } = req.user;
@@ -28,4 +34,5 @@ module.exports = {
   check_balance,
   recharge,
   pay,
+  movements,
 };
