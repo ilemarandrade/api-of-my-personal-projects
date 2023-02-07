@@ -18,6 +18,6 @@ router.get("/check_balance", walletController.check_balance);
 
 router.put("/recharge", validation_password, walletController.recharge);
 
-router.put("/pay", walletController.pay);
+router.put("/pay", validation_password, walletController.pay);
 
 module.exports = router;
