@@ -35,8 +35,11 @@ const login = async (user) => {
 
 const createUser = async (user) => {
   try {
-    const userExist = await UserModel.find({ email: user.email });
-    if (userExist.length) {
+    const userExistWithThisEmail = await UserModel.find({ email: user.email });
+    const userExistWithThisDocument = await UserModel.find({
+      document: user.document,
+    });
+    if (userExistWithThisEmail.length || userExistWithThisDocument.length) {
       return { statusCode: 401, response: { message: "User exist" } };
     } else {
       const userToSend = new UserModel({
