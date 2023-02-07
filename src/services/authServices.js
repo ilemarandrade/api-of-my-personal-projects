@@ -11,8 +11,7 @@ const login = async (user) => {
       const { _doc: dataToJwt } = existUser;
       let token = jwt.sign(
         { user: { ...dataToJwt, _id: dataToJwt._id.toString() } },
-        process.env.SECRET_JWT,
-        { expiresIn: "1h" }
+        process.env.SECRET_JWT
       );
       return {
         statusCode: 200,
