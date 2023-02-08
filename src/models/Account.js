@@ -1,6 +1,6 @@
 const { Schema, model, default: mongoose } = require("mongoose");
 
-const Acount = new Schema({
+const Account = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -24,4 +24,4 @@ const Acount = new Schema({
   ],
 });
 
-module.exports = model("Acount", Acount);
+module.exports = model("Account", Account);

@@ -1,5 +1,5 @@
 const walletServices = require("../services/walletServices");
-const AcountModel = require("../models/Acount");
+const AccountModel = require("../models/Account");
 
 const check_balance = async (req, res) => {
   const { user } = req.user;
