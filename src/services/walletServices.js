@@ -1,14 +1,14 @@
 require("dotenv").config();
-const AcountModel = require("../models/Acount");
+const AccountModel = require("../models/Account");
 const moment = require("moment");
 
 const check_balance = async (user_id) => {
   try {
-    const acount = await AcountModel.findOne({ user_id });
-    if (acount) {
+    const Account = await AccountModel.findOne({ user_id });
+    if (Account) {
       return {
         statusCode: 200,
-        response: { available_balance: acount.available_balance },
+        response: { available_balance: Account.available_balance },
       };
     } else {
       return {
@@ -27,11 +27,11 @@ const check_balance = async (user_id) => {
 
 const movements = async (user_id) => {
   try {
-    const acount = await AcountModel.findOne({ user_id });
-    if (acount) {
+    const Account = await AccountModel.findOne({ user_id });
+    if (Account) {
       return {
         statusCode: 200,
-        response: { movements: acount.movements },
+        response: { movements: Account.movements },
       };
     } else {
       return {
@@ -51,21 +51,21 @@ const movements = async (user_id) => {
 const recharge = async (user_id, data) => {
   try {
     const { amount, concept } = data;
-    const acount = await AcountModel.findOne({ user_id });
+    const Account = await AccountModel.findOne({ user_id });
     const creditToRemainingBalance =
-      acount.available_balance + parseInt(amount);
-    acount.available_balance = creditToRemainingBalance;
-    acount.movements.unshift({
+      Account.available_balance + parseInt(amount);
+    Account.available_balance = creditToRemainingBalance;
+    Account.movements.unshift({
       date: moment().unix(),
       type: "credit",
       amount: parseInt(amount),
       remaining_balance: creditToRemainingBalance,
       concept,
     });
-    await acount.save();
+    await Account.save();
     return {
       statusCode: 200,
-      response: { available_balance: acount.available_balance },
+      response: { available_balance: Account.available_balance },
     };
   } catch (error) {
     console.log(error);
@@ -79,8 +79,9 @@ const recharge = async (user_id, data) => {
 const pay = async (user_id, payData) => {
   try {
     const { amount, concept } = payData;
-    const acount = await AcountModel.findOne({ user_id });
-    const debitToRemainingBalance = acount.available_balance - parseInt(amount);
+    const Account = await AccountModel.findOne({ user_id });
+    const debitToRemainingBalance =
+      Account.available_balance - parseInt(amount);
     if (debitToRemainingBalance < 0) {
       return {
         statusCode: 400,
@@ -89,18 +90,18 @@ const pay = async (user_id, payData) => {
         },
       };
     } else {
-      acount.available_balance = debitToRemainingBalance;
-      acount.movements.unshift({
+      Account.available_balance = debitToRemainingBalance;
+      Account.movements.unshift({
         date: moment().unix(),
         type: "debit",
         amount: -parseInt(amount),
         remaining_balance: debitToRemainingBalance,
         concept,
       });
-      await acount.save();
+      await Account.save();
       return {
         statusCode: 200,
-        response: { available_balance: acount.available_balance },
+        response: { available_balance: Account.available_balance },
       };
     }
   } catch (error) {

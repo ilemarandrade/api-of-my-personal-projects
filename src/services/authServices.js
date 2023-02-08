@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
-const AcountModel = require("../models/Acount");
+const AccountModel = require("../models/Account");
 const UserModel = require("../models/User");
 
 const login = async (user) => {
@@ -44,13 +44,13 @@ const createUser = async (user) => {
       const userToSend = new UserModel({
         ...user,
       });
-      const createUserAcount = new AcountModel({
+      const createUserAccount = new AccountModel({
         available_balance: 0,
         user_id: userToSend._id,
         movements: [],
       });
       await userToSend.save();
-      await createUserAcount.save();
+      await createUserAccount.save();
       return { statusCode: 200, response: true };
     }
   } catch (error) {
