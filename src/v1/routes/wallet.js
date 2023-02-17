@@ -22,4 +22,6 @@ router.put("/recharge", validation_password, walletController.recharge);
 
 router.put("/pay", validation_password, walletController.pay);
 
+router.put("/delete_movement", walletController.delete_movement);
+
 module.exports = router;
