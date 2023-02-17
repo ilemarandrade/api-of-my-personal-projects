@@ -113,9 +113,61 @@ const pay = async (user_id, payData) => {
   }
 };
 
+const delete_movement = async (user_id, payData) => {
+  try {
+    const { movement_id } = payData;
+    const Account = await AccountModel.findOne({ user_id }); // find movement's user
+    const movementToDelete = Account.movements.filter(
+      ({ _id }) => _id.toString() == movement_id
+    )[0]; // get movement to delete
+
+    if (Account.available_balance > movementToDelete.amount) {
+      Account.movements = Account.movements.map((movement) =>
+        movement._id.toString() == movement_id
+          ? { ...movement, wasRemoved: true }
+          : { ...movement }
+      ); // update movements
+      const { type, amount, concept } = movementToDelete;
+      const isCredit = type === "credit";
+      const amountNew = isCredit ? -amount : amount * -1;
+      Account.available_balance = Account.available_balance - parseInt(amount);
+      Account.movements.unshift({
+        date: moment().unix(),
+        type: isCredit ? "debit" : "credit",
+        amount: amountNew,
+        remaining_balance: Account.available_balance,
+        concept: `Eliminaste el movimiento: ${concept}`,
+        wasRemoved: true,
+      });
+
+      await Account.save();
+
+      return {
+        statusCode: 200,
+        response: { message: true },
+      };
+    } else {
+      return {
+        statusCode: 400,
+        response: {
+          message:
+            "No puedes eliminar este movimiento porque quedaria tu saldo negativo",
+        },
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 400,
+      response: { message: "An unexpected error has occurred" },
+    };
+  }
+};
+
 module.exports = {
   check_balance,
   recharge,
   pay,
   movements,
+  delete_movement,
 };
