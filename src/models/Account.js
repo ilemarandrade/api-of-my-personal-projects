@@ -20,6 +20,10 @@ const Account = new Schema({
       amount: Number,
       remaining_balance: Number,
       concept: String,
+      wasRemoved: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
 });
