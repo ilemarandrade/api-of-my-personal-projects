@@ -1,6 +1,7 @@
 require("dotenv").config();
 const AccountModel = require("../models/Account");
 const moment = require("moment");
+const { formatNumberDecimal } = require("../utils/formatNumberDecimal");
 
 const check_balance = async (user_id) => {
   try {
@@ -52,13 +53,15 @@ const recharge = async (user_id, data) => {
   try {
     const { amount, concept } = data;
     const Account = await AccountModel.findOne({ user_id });
-    const creditToRemainingBalance =
-      Account.available_balance + parseInt(amount);
+    const amountToSubtract = formatNumberDecimal(amount);
+    const creditToRemainingBalance = formatNumberDecimal(
+      Account.available_balance + amountToSubtract
+    );
     Account.available_balance = creditToRemainingBalance;
     Account.movements.unshift({
       date: moment().unix(),
       type: "credit",
-      amount: parseInt(amount),
+      amount: amountToSubtract,
       remaining_balance: creditToRemainingBalance,
       concept,
     });
@@ -80,8 +83,11 @@ const pay = async (user_id, payData) => {
   try {
     const { amount, concept } = payData;
     const Account = await AccountModel.findOne({ user_id });
-    const debitToRemainingBalance =
-      Account.available_balance - parseInt(amount);
+    const amountToAdd = formatNumberDecimal(amount);
+    const debitToRemainingBalance = formatNumberDecimal(
+      Account.available_balance - amountToAdd
+    );
+
     if (debitToRemainingBalance < 0) {
       return {
         statusCode: 400,
@@ -94,7 +100,7 @@ const pay = async (user_id, payData) => {
       Account.movements.unshift({
         date: moment().unix(),
         type: "debit",
-        amount: -parseInt(amount),
+        amount: -amountToAdd,
         remaining_balance: debitToRemainingBalance,
         concept,
       });
@@ -130,7 +136,8 @@ const delete_movement = async (user_id, payData) => {
       const { type, amount, concept } = movementToDelete;
       const isCredit = type === "credit";
       const amountNew = isCredit ? -amount : amount * -1;
-      Account.available_balance = Account.available_balance - parseInt(amount);
+      Account.available_balance =
+        Account.available_balance - Number(parseFloat(amount).toFixed(2));
       Account.movements.unshift({
         date: moment().unix(),
         type: isCredit ? "debit" : "credit",
