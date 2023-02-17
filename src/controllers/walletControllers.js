@@ -30,9 +30,20 @@ const pay = async (req, res) => {
   return res.status(statusCode).send(response);
 };
 
+const delete_movement = async (req, res) => {
+  const deleteMovementData = req.body;
+  const { user } = req.user;
+  const { statusCode, response } = await walletServices.delete_movement(
+    user._id,
+    deleteMovementData
+  );
+  return res.status(statusCode).send(response);
+};
+
 module.exports = {
   check_balance,
   recharge,
   pay,
   movements,
+  delete_movement,
 };
