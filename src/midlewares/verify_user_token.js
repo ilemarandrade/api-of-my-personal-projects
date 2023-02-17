@@ -12,11 +12,11 @@ const verifyUserToken = async (req, res, next) => {
       req.token = token;
       next();
     } else {
-      res.status(401).send("Invalid token !");
+      res.status(401).send({ message: "Invalid token !" });
     }
   } catch (err) {
     console.log(err);
-    res.status(401).send("Invalid token !");
+    res.status(401).send({ message: "Invalid token !" });
   }
 };
 
