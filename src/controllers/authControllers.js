@@ -14,7 +14,7 @@ const user_Information = async (req, res) => {
     res.status(200).send(verified);
   } catch (err) {
     console.log(err);
-    res.status(400).send("Invalid token!");
+    res.status(400).send({ message: "Invalid token!" });
   }
 };
 

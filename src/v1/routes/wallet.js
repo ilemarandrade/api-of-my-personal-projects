@@ -8,7 +8,7 @@ const validation_password = async (req, res, next) => {
     if (password === passwordReceived) {
       next();
     } else {
-      return res.status(405).send("Password incorrecta");
+      return res.status(405).send({ message: "Password incorrecta" });
     }
   } catch (err) {}
 };
