@@ -128,10 +128,8 @@ const delete_movement = async (user_id, payData) => {
     )[0]; // get movement to delete
 
     if (Account.available_balance > movementToDelete.amount) {
-      Account.movements = Account.movements.map((movement) =>
-        movement._id.toString() == movement_id
-          ? { ...movement, wasRemoved: true }
-          : { ...movement }
+      Account.movements = Account.movements.filter(
+        (movement) => movement._id.toString() !== movement_id
       ); // update movements
       const { type, amount, concept } = movementToDelete;
       const isCredit = type === "credit";
