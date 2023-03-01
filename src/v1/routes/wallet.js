@@ -18,9 +18,9 @@ router.get("/check_balance", walletController.check_balance);
 
 router.get("/movements", walletController.movements);
 
-router.put("/recharge", validation_password, walletController.recharge);
+router.put("/recharge", walletController.recharge);
 
-router.put("/pay", validation_password, walletController.pay);
+router.put("/pay", walletController.pay);
 
 router.put("/delete_movement", walletController.delete_movement);
 
