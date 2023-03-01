@@ -127,7 +127,7 @@ const delete_movement = async (user_id, payData) => {
       ({ _id }) => _id.toString() == movement_id
     )[0]; // get movement to delete
 
-    if (Account.available_balance > movementToDelete.amount) {
+    if (Account.available_balance >= movementToDelete.amount) {
       Account.movements = Account.movements.filter(
         (movement) => movement._id.toString() !== movement_id
       ); // update movements
