@@ -12,7 +12,9 @@ const PORT = process.env.PORT || 8080;
 
 // connect to mongoose
 mongoose.connect(mongoString);
+
 const database = mongoose.connection;
+
 database.on("error", (error) => {
   console.log(error);
 });
@@ -24,10 +26,6 @@ database.once("connected", () => {
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// For testing purposes
-app.get("/", (req, res) => {
-  res.send("<h2>It's Working Api!</h2>");
-});
 
 // *** call to version 1 routes ***
 app.use("/api/v1/auth", v1RouterAuth);
