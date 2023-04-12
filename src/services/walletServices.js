@@ -6,6 +6,7 @@ const { formatNumberDecimal } = require("../utils/formatNumberDecimal");
 const check_balance = async (user_id) => {
   try {
     const Account = await AccountModel.findOne({ user_id });
+
     if (Account) {
       return {
         statusCode: 200,
@@ -29,6 +30,7 @@ const check_balance = async (user_id) => {
 const movements = async (user_id) => {
   try {
     const Account = await AccountModel.findOne({ user_id });
+
     if (Account) {
       return {
         statusCode: 200,
@@ -57,6 +59,7 @@ const recharge = async (user_id, data) => {
     const creditToRemainingBalance = formatNumberDecimal(
       Account.available_balance + amountToSubtract
     );
+
     Account.available_balance = creditToRemainingBalance;
     Account.movements.unshift({
       date: moment().unix(),
@@ -65,7 +68,9 @@ const recharge = async (user_id, data) => {
       remaining_balance: creditToRemainingBalance,
       concept,
     });
+
     await Account.save();
+
     return {
       statusCode: 200,
       response: { available_balance: Account.available_balance },
@@ -104,7 +109,9 @@ const pay = async (user_id, payData) => {
         remaining_balance: debitToRemainingBalance,
         concept,
       });
+
       await Account.save();
+
       return {
         statusCode: 200,
         response: { available_balance: Account.available_balance },
@@ -131,9 +138,13 @@ const delete_movement = async (user_id, payData) => {
       Account.movements = Account.movements.filter(
         (movement) => movement._id.toString() !== movement_id
       ); // update movements
+
       const { type, amount, concept } = movementToDelete;
+
       const isCredit = type === "credit";
+
       const amountNew = isCredit ? -amount : amount * -1;
+
       Account.available_balance =
         Account.available_balance - Number(parseFloat(amount).toFixed(2));
       Account.movements.unshift({

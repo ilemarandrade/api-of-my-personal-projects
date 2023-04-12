@@ -7,12 +7,15 @@ const UserModel = require("../models/User");
 const login = async (user) => {
   try {
     const existUser = await UserModel.findOne({ ...user });
+
     if (existUser) {
       const { _doc: dataToJwt } = existUser;
+
       let token = jwt.sign(
         { user: { ...dataToJwt, _id: dataToJwt._id.toString() } },
         process.env.SECRET_JWT
       );
+
       return {
         statusCode: 200,
         response: { jwt: token },
@@ -38,19 +41,23 @@ const createUser = async (user) => {
     const userExistWithThisDocument = await UserModel.find({
       document: user.document,
     });
+
     if (userExistWithThisEmail.length || userExistWithThisDocument.length) {
       return { statusCode: 401, response: { message: "User exist" } };
     } else {
       const userToSend = new UserModel({
         ...user,
       });
+
       const createUserAccount = new AccountModel({
         available_balance: 0,
         user_id: userToSend._id,
         movements: [],
       });
+
       await userToSend.save();
       await createUserAccount.save();
+
       return { statusCode: 200, response: true };
     }
   } catch (error) {
