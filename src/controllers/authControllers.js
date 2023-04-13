@@ -20,9 +20,7 @@ const user_Information = async (req, res) => {
     res.status(200).send(verified);
   } catch (err) {
     console.log(err);
-    res
-      .status(401)
-      .send({ message: t("message.user_information.invalid_token") });
+    res.status(401).send({ message: t("message.authorization_incorrect") });
   }
 };
 
