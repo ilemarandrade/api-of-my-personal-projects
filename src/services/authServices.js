@@ -3,8 +3,11 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const AccountModel = require("../models/Account");
 const UserModel = require("../models/User");
+const handleTraductions = require("../utils/handleTraductions");
 
-const login = async (user) => {
+const login = async ({ user, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
     const existUser = await UserModel.findOne({ ...user });
 
@@ -30,12 +33,14 @@ const login = async (user) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
 
-const createUser = async (user) => {
+const createUser = async ({ user, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
     const userExistWithThisEmail = await UserModel.find({ email: user.email });
     const userExistWithThisDocument = await UserModel.find({
@@ -58,16 +63,42 @@ const createUser = async (user) => {
       await userToSend.save();
       await createUserAccount.save();
 
-      return { statusCode: 200, response: true };
+      return { statusCode: 200, response: t("message.create_user.success") };
     }
   } catch (error) {
     console.log("error:", error);
-    return { statusCode: 400, message: "An error has occurred" };
+    return {
+      statusCode: 400,
+      response: { message: t("message.error_unexpected") },
+    };
   }
 };
 
-const updateUser = () => {
-  return;
+const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
+  const { _id } = prevUserData;
+  const { t } = handleTraductions(dataToUpdateUser.lang || langCurrent);
+
+  try {
+    const User = await UserModel.updateOne({ _id }, { ...dataToUpdateUser });
+
+    if (User.modifiedCount) {
+      return {
+        statusCode: 200,
+        response: { message: t("message.success") },
+      };
+    } else {
+      return {
+        statusCode: 400,
+        response: { message: t("message.error_unexpected") },
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 400,
+      response: { message: t("message.error_unexpected") },
+    };
+  }
 };
 
 module.exports = {
