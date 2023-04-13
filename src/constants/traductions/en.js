@@ -12,6 +12,13 @@ const en = {
       can_not_remove:
         "You cannot delete this movement because your negative balance would remain",
     },
+    login: {
+      wrong_data: "Email or password was not correct",
+    },
+    sign_up: {
+      user_exist:
+        "There is already an account associated with this email or document",
+    },
   },
 };
 

@@ -12,6 +12,13 @@ const es = {
       can_not_remove:
         "No puedes eliminar este movimiento porque quedaria tu saldo negativo",
     },
+    login: {
+      wrong_data: "El email o la contraseña no son correctos",
+    },
+    sign_up: {
+      user_exist:
+        "Ya existe una cuenta asociada a este correo electrónico o documento",
+    },
   },
 };
 
