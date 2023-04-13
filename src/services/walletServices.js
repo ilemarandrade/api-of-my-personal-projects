@@ -3,7 +3,9 @@ const AccountModel = require("../models/Account");
 const moment = require("moment");
 const { formatNumberDecimal } = require("../utils/formatNumberDecimal");
 
-const check_balance = async (user_id) => {
+const check_balance = async ({ user_id, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
     const Account = await AccountModel.findOne({ user_id });
 
@@ -14,20 +16,22 @@ const check_balance = async (user_id) => {
       };
     } else {
       return {
-        statusCode: 401,
-        response: { message: "authorization incorrect" },
+        statusCode: 400,
+        response: { message: t("message.error_unexpected") },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
 
-const movements = async (user_id) => {
+const movements = async ({ user_id, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
     const Account = await AccountModel.findOne({ user_id });
 
@@ -38,22 +42,24 @@ const movements = async (user_id) => {
       };
     } else {
       return {
-        statusCode: 401,
-        response: { message: "authorization incorrect" },
+        statusCode: 400,
+        response: { message: t("message.error_unexpected") },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
 
-const recharge = async (user_id, data) => {
+const recharge = async ({ user_id, payload, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
-    const { amount, concept } = data;
+    const { amount, concept } = payload;
     const Account = await AccountModel.findOne({ user_id });
     const amountToSubtract = formatNumberDecimal(amount);
     const creditToRemainingBalance = formatNumberDecimal(
@@ -79,14 +85,16 @@ const recharge = async (user_id, data) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
 
-const pay = async (user_id, payData) => {
+const pay = async ({ user_id, payload, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
-    const { amount, concept } = payData;
+    const { amount, concept } = payload;
     const Account = await AccountModel.findOne({ user_id });
     const amountToAdd = formatNumberDecimal(amount);
     const debitToRemainingBalance = formatNumberDecimal(
@@ -97,7 +105,7 @@ const pay = async (user_id, payData) => {
       return {
         statusCode: 400,
         response: {
-          message: "The amount to pay exceeds your available balance",
+          message: t("message.pay.amount.is_too_much"),
         },
       };
     } else {
@@ -121,15 +129,18 @@ const pay = async (user_id, payData) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
 
-const delete_movement = async (user_id, payData) => {
+const delete_movement = async ({ user_id, payload, lang }) => {
+  const { t } = handleTraductions(lang);
+
   try {
-    const { movement_id } = payData;
+    const { movement_id } = payload;
     const Account = await AccountModel.findOne({ user_id }); // find movement's user
+
     const movementToDelete = Account.movements.filter(
       ({ _id }) => _id.toString() == movement_id
     )[0]; // get movement to delete
@@ -152,7 +163,7 @@ const delete_movement = async (user_id, payData) => {
         type: isCredit ? "debit" : "credit",
         amount: amountNew,
         remaining_balance: Account.available_balance,
-        concept: `Eliminaste el movimiento: ${concept}`,
+        concept,
         wasRemoved: true,
       });
 
@@ -166,8 +177,7 @@ const delete_movement = async (user_id, payData) => {
       return {
         statusCode: 400,
         response: {
-          message:
-            "No puedes eliminar este movimiento porque quedaria tu saldo negativo",
+          message: t("message.delete_movement.can_not_remove"),
         },
       };
     }
@@ -175,7 +185,7 @@ const delete_movement = async (user_id, payData) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: "An unexpected error has occurred" },
+      response: { message: t("message.error_unexpected") },
     };
   }
 };
