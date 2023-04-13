@@ -14,6 +14,6 @@ router.get(
 
 router.post("/signup", authController.createNewUser);
 
-router.put("/updateUser", authController.updateUser);
+router.put("/update_user", verifyUserToken, authController.updateUser);
 
 module.exports = router;
