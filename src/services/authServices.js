@@ -26,7 +26,7 @@ const login = async ({ user, lang }) => {
     } else {
       return {
         statusCode: 400,
-        response: { message: "Email or password was not correct" },
+        response: { message: t("message.login.wrong.data") },
       };
     }
   } catch (error) {
@@ -48,7 +48,10 @@ const createUser = async ({ user, lang }) => {
     });
 
     if (userExistWithThisEmail.length || userExistWithThisDocument.length) {
-      return { statusCode: 401, response: { message: "User exist" } };
+      return {
+        statusCode: 400,
+        response: { message: t("message.sign_up.user_exist") },
+      };
     } else {
       const userToSend = new UserModel({
         ...user,
