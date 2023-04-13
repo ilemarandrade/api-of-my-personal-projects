@@ -1,44 +1,63 @@
 const walletServices = require("../services/walletServices");
-const AccountModel = require("../models/Account");
 
 const check_balance = async (req, res) => {
+  const { lang } = req.headers.lang;
   const { user } = req.user;
-  const { statusCode, response } = await walletServices.check_balance(user._id);
+  const { statusCode, response } = await walletServices.check_balance({
+    user_id: user._id,
+    lang,
+  });
+
   return res.status(statusCode).send(response);
 };
 
 const movements = async (req, res) => {
+  const { lang } = req.headers.lang;
   const { user } = req.user;
-  const { statusCode, response } = await walletServices.movements(user._id);
+  const { statusCode, response } = await walletServices.movements({
+    user_id: user._id,
+    lang,
+  });
+
   return res.status(statusCode).send(response);
 };
 
 const recharge = async (req, res) => {
-  const data = req.body;
+  const { lang } = req.headers.lang;
+  const payload = req.body;
   const { user } = req.user;
-  const { statusCode, response } = await walletServices.recharge(
-    user._id,
-    data
-  );
+
+  const { statusCode, response } = await walletServices.recharge({
+    user_id: user._id,
+    payload,
+    lang,
+  });
 
   return res.status(statusCode).send(response);
 };
 
 const pay = async (req, res) => {
-  const payData = req.body;
+  const { lang } = req.headers.lang;
+  const payload = req.body;
   const { user } = req.user;
-  const { statusCode, response } = await walletServices.pay(user._id, payData);
+  const { statusCode, response } = await walletServices.pay({
+    user_id: user._id,
+    payload,
+    lang,
+  });
 
   return res.status(statusCode).send(response);
 };
 
 const delete_movement = async (req, res) => {
+  const { lang } = req.headers.lang;
   const deleteMovementData = req.body;
   const { user } = req.user;
-  const { statusCode, response } = await walletServices.delete_movement(
-    user._id,
-    deleteMovementData
-  );
+  const { statusCode, response } = await walletServices.delete_movement({
+    user_id: user._id,
+    deleteMovementData,
+    lang,
+  });
 
   return res.status(statusCode).send(response);
 };
