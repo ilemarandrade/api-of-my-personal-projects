@@ -19,11 +19,15 @@ const User = new Schema({
   },
   document: {
     type: String,
-    required: String,
+    required: true,
   },
   phone: {
     type: String,
     default: "",
+  },
+  lang: {
+    type: String,
+    default: null,
   },
 });
 
