@@ -15,11 +15,11 @@ const verifyUserToken = async (req, res, next) => {
       req.token = token;
       next();
     } else {
-      res.status(401).send({ message: "Invalid token !" });
+      res.status(401).send({ message: t("message.authorization_incorrect") });
     }
   } catch (err) {
     console.log(err);
-    res.status(401).send({ message: "Invalid token !" });
+    res.status(400).send({ message: t("message.error_unexpected") });
   }
 };
 
