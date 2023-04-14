@@ -1,7 +1,7 @@
 const walletServices = require("../services/walletServices");
 
 const check_balance = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const { user } = req.user;
   const { statusCode, response } = await walletServices.check_balance({
     user_id: user._id,
@@ -12,7 +12,7 @@ const check_balance = async (req, res) => {
 };
 
 const movements = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const { user } = req.user;
   const { statusCode, response } = await walletServices.movements({
     user_id: user._id,
@@ -23,7 +23,7 @@ const movements = async (req, res) => {
 };
 
 const recharge = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const payload = req.body;
   const { user } = req.user;
 
@@ -37,7 +37,7 @@ const recharge = async (req, res) => {
 };
 
 const pay = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const payload = req.body;
   const { user } = req.user;
   const { statusCode, response } = await walletServices.pay({
@@ -50,7 +50,7 @@ const pay = async (req, res) => {
 };
 
 const delete_movement = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const deleteMovementData = req.body;
   const { user } = req.user;
   const { statusCode, response } = await walletServices.delete_movement({
