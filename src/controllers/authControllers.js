@@ -28,9 +28,11 @@ const user_Information = async (req, res) => {
 const createNewUser = async (req, res) => {
   const { lang } = req.headers;
   const user = req.body.user;
-  const { statusCode, message } = await authServices.createUser({ user, lang });
-
-  res.status(statusCode).send(message);
+  const { statusCode, response } = await authServices.createUser({
+    user,
+    lang,
+  });
+  res.status(statusCode).send(response);
 };
 
 const updateUser = async (req, res) => {
