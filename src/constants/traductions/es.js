@@ -6,7 +6,7 @@ const es = {
     user_information: { invalid_token: "Tu sesión ha expirado " },
     authorization_incorrect: "Inicia sesión para continuar.",
     pay: {
-      amount_is_too_much: "The amount to pay exceeds your available balance",
+      amount_is_too_much: "El monto de gasto excede su saldo disponible",
     },
     delete_movement: {
       can_not_remove:
