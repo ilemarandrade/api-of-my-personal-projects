@@ -106,7 +106,7 @@ const pay = async ({ user_id, payload, lang }) => {
       return {
         statusCode: 400,
         response: {
-          message: t("message.pay.amount.is_too_much"),
+          message: t("message.pay.amount_is_too_much"),
         },
       };
     } else {
