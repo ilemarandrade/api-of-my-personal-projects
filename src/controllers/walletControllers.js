@@ -51,11 +51,11 @@ const pay = async (req, res) => {
 
 const delete_movement = async (req, res) => {
   const { lang } = req.headers;
-  const deleteMovementData = req.body;
+  const payload = req.body;
   const { user } = req.user;
   const { statusCode, response } = await walletServices.delete_movement({
     user_id: user._id,
-    deleteMovementData,
+    payload,
     lang,
   });
 
