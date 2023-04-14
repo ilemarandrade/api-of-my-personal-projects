@@ -1,8 +1,9 @@
 const authServices = require("../services/authServices");
 const jwt = require("jsonwebtoken");
+const handleTraductions = require("../utils/handleTraductions");
 
 const login = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const user = req.body.user;
   const { statusCode, response } = await authServices.login({ user, lang });
 
@@ -10,7 +11,7 @@ const login = async (req, res) => {
 };
 
 const user_Information = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const { t } = handleTraductions(lang);
 
   try {
@@ -25,7 +26,7 @@ const user_Information = async (req, res) => {
 };
 
 const createNewUser = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const user = req.body.user;
   const { statusCode, message } = await authServices.createUser({ user, lang });
 
@@ -33,7 +34,7 @@ const createNewUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { lang } = req.headers.lang;
+  const { lang } = req.headers;
   const { user: prevUserData } = req.user; // data save from midleware that verify token
   const dataToUpdateUser = req.body.user;
   const { statusCode, response } = await authServices.updateUser({
