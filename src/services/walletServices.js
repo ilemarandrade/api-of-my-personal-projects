@@ -2,6 +2,7 @@ require("dotenv").config();
 const AccountModel = require("../models/Account");
 const moment = require("moment");
 const { formatNumberDecimal } = require("../utils/formatNumberDecimal");
+const handleTraductions = require("../utils/handleTraductions");
 
 const check_balance = async ({ user_id, lang }) => {
   const { t } = handleTraductions(lang);
