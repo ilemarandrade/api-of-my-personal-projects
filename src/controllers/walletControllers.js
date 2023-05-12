@@ -14,9 +14,14 @@ const check_balance = async (req, res) => {
 const movements = async (req, res) => {
   const { lang } = req.headers;
   const { user } = req.user;
+  const { page, rowsPerPage, removedMoves } = req.query;
+
   const { statusCode, response } = await walletServices.movements({
     user_id: user._id,
     lang,
+    page,
+    rowsPerPage,
+    removedMoves,
   });
 
   return res.status(statusCode).send(response);

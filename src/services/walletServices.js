@@ -30,16 +30,33 @@ const check_balance = async ({ user_id, lang }) => {
   }
 };
 
-const movements = async ({ user_id, lang }) => {
+const movements = async ({
+  user_id,
+  lang,
+  page,
+  rowsPerPage,
+  removedMoves,
+}) => {
   const { t } = handleTraductions(lang);
+  const initList = page * rowsPerPage - rowsPerPage;
+  const endList = page * rowsPerPage;
+  const isRemovedMoves = removedMoves === "true";
 
   try {
     const Account = await AccountModel.findOne({ user_id });
+    const movements = isRemovedMoves
+      ? Account.movements.filter(
+          ({ wasRemoved }) => wasRemoved === isRemovedMoves
+        )
+      : Account.movements;
 
     if (Account) {
       return {
         statusCode: 200,
-        response: { movements: Account.movements },
+        response: {
+          movements: movements.slice(initList, endList),
+          total: movements.length,
+        },
       };
     } else {
       return {
