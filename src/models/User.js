@@ -29,6 +29,7 @@ const User = new Schema({
     type: String,
     default: null,
   },
+  token_to_reset_password: { type: String, default: "" },
 });
 
 module.exports = model("User", User);
