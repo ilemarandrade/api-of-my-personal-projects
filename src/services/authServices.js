@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const AccountModel = require("../models/Account");
 const UserModel = require("../models/User");
 const handleTraductions = require("../utils/handleTraductions");
+const { transporter } = require("../utils/sendEmail");
+const recoveryPasswordMail = require("../constants/mails/recoveryPassword");
 
 const login = async ({ user, lang }) => {
   const { t } = handleTraductions(lang);
@@ -12,10 +14,20 @@ const login = async ({ user, lang }) => {
     const existUser = await UserModel.findOne({ ...user });
 
     if (existUser) {
-      const { _doc: dataToJwt } = existUser;
+      const { _id, name, lastname, email, phone, document, lang } = existUser;
 
       let token = jwt.sign(
-        { user: { ...dataToJwt, _id: dataToJwt._id.toString() } },
+        {
+          user: {
+            name,
+            lastname,
+            email,
+            phone,
+            document,
+            lang,
+            _id: _id.toString(),
+          },
+        },
         process.env.SECRET_JWT
       );
 
@@ -69,7 +81,6 @@ const createUser = async ({ user, lang }) => {
       return { statusCode: 200, response: t("message.create_user.success") };
     }
   } catch (error) {
-    console.log("error:", error);
     return {
       statusCode: 400,
       response: { message: t("message.error_unexpected") },
@@ -96,6 +107,47 @@ const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
       };
     }
   } catch (error) {
+    return {
+      statusCode: 400,
+      response: { message: t("message.error_unexpected") },
+    };
+  }
+};
+
+const forgotPassword = async ({ lang, email }) => {
+  const { t } = handleTraductions(lang);
+
+  try {
+    const User = await UserModel.findOne({ email });
+
+    if (User) {
+      let token_to_reset_password = jwt.sign(
+        { User: { _id: User._id.toString() } },
+        process.env.SECRET_JWT,
+        { expiresIn: "5m" }
+      );
+
+      await UserModel.updateOne({ email }, { token_to_reset_password });
+
+      await transporter.sendMail({
+        from: "Wallet Andrade", // sender address
+        to: email, // list of receivers
+        subject: t("message.forgot_password.title_email"), // Subject line is like main title
+        text: t("message.forgot_password.title_email"), // plain text body
+        html: recoveryPasswordMail[lang](token_to_reset_password), // html body
+      });
+
+      return {
+        statusCode: 200,
+        response: { message: t("message.forgot_password.check_your_email") },
+      };
+    } else {
+      return {
+        statusCode: 400,
+        response: { message: t("message.login.wrong.data") },
+      };
+    }
+  } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
@@ -104,8 +156,54 @@ const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
   }
 };
 
+const newPassword = async ({
+  lang,
+  password,
+  confirmation_password,
+  token,
+}) => {
+  const { t } = handleTraductions(lang);
+
+  try {
+    if (password !== confirmation_password) {
+      return {
+        statusCode: 400,
+        response: {
+          message: t("message.forgot_password.passwords_do_not_match"),
+        },
+      };
+    }
+
+    const {
+      User: { _id },
+    } = jwt.verify(token, process.env.SECRET_JWT);
+
+    const User = await UserModel.findByIdAndUpdate(_id, { password });
+
+    if (User) {
+      return {
+        statusCode: 200,
+        response: { message: t("forgot_password.success_update_password") },
+      };
+    } else {
+      return {
+        statusCode: 400,
+        response: { message: t("message.error_unexpected") },
+      };
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      statusCode: 400,
+      response: { message: t("message.authorization_incorrect") },
+    };
+  }
+};
+
 module.exports = {
   login,
   createUser,
   updateUser,
+  forgotPassword,
+  newPassword,
 };
