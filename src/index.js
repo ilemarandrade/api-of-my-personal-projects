@@ -8,7 +8,17 @@ const { verifyUserToken } = require("./midlewares/verify_user_token");
 
 const mongoString = process.env.MONGO_URL;
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8081;
+const { transporter } = require("./utils/sendEmail");
+
+// verify connection configuration
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+});
 
 // connect to mongoose
 mongoose.connect(mongoString);

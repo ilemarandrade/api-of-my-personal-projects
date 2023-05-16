@@ -16,4 +16,8 @@ router.post("/signup", authController.createNewUser);
 
 router.put("/update_user", verifyUserToken, authController.updateUser);
 
+router.post("/forgot_password", authController.forgotPassword);
+
+router.put("/new_password", authController.newPassword);
+
 module.exports = router;
