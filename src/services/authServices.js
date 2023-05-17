@@ -183,7 +183,9 @@ const newPassword = async ({
     if (User) {
       return {
         statusCode: 200,
-        response: { message: t("forgot_password.success_update_password") },
+        response: {
+          message: t("message.forgot_password.success_update_password"),
+        },
       };
     } else {
       return {
@@ -195,7 +197,9 @@ const newPassword = async ({
     console.log(err);
     return {
       statusCode: 400,
-      response: { message: t("message.authorization_incorrect") },
+      response: {
+        message: t("message.forgot_password.expired_token"),
+      },
     };
   }
 };

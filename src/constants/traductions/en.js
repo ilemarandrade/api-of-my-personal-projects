@@ -25,6 +25,7 @@ const en = {
       title_email: "Password recovery instructions",
       success_update_password: "Password updated successfully",
       passwords_do_not_match: "Passwords do not match",
+      expired_token: "Expired token you must request again to recover password",
     },
   },
 };
