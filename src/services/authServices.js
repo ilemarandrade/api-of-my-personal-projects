@@ -123,8 +123,8 @@ const forgotPassword = async ({ lang, email }) => {
     if (User) {
       let token_to_reset_password = jwt.sign(
         { User: { _id: User._id.toString() } },
-        process.env.SECRET_JWT,
-        { expiresIn: "5m" }
+        process.env.SECRET_JWT
+        // { expiresIn: "5m" }
       );
 
       await UserModel.updateOne({ email }, { token_to_reset_password });
@@ -178,23 +178,29 @@ const newPassword = async ({
       User: { _id },
     } = jwt.verify(token, process.env.SECRET_JWT);
 
-    const User = await UserModel.findByIdAndUpdate(_id, {
-      password,
-      token_to_reset_password: "",
-    });
+    const { token_to_reset_password } = await UserModel.findById(_id);
 
-    if (User) {
-      return {
-        statusCode: 200,
-        response: {
-          message: t("message.forgot_password.success_update_password"),
-        },
-      };
+    if (token_to_reset_password === token) {
+      const User = await UserModel.findByIdAndUpdate(_id, {
+        password,
+        token_to_reset_password: "",
+      });
+
+      if (User) {
+        return {
+          statusCode: 200,
+          response: {
+            message: t("message.forgot_password.success_update_password"),
+          },
+        };
+      } else {
+        return {
+          statusCode: 400,
+          response: { message: t("message.error_unexpected") },
+        };
+      }
     } else {
-      return {
-        statusCode: 400,
-        response: { message: t("message.error_unexpected") },
-      };
+      throw "Expired token you must request again to recover password";
     }
   } catch (err) {
     console.log(err);
