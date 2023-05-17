@@ -25,6 +25,8 @@ const es = {
       title_email: "Instrucciones para recuperación de contraseña",
       success_update_password: "Contraseña actualizada con éxito",
       passwords_do_not_match: "Contraseñas no coinciden",
+      expired_token:
+        "Token expirado debes solicitar de nuevo recuperar contraseña",
     },
   },
 };
