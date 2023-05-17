@@ -178,7 +178,10 @@ const newPassword = async ({
       User: { _id },
     } = jwt.verify(token, process.env.SECRET_JWT);
 
-    const User = await UserModel.findByIdAndUpdate(_id, { password });
+    const User = await UserModel.findByIdAndUpdate(_id, {
+      password,
+      token_to_reset_password: "",
+    });
 
     if (User) {
       return {
