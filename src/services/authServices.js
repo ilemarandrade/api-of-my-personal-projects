@@ -128,8 +128,8 @@ const forgotPassword = async ({ lang, email }) => {
     if (User) {
       let token_to_reset_password = jwt.sign(
         { User: { _id: User._id.toString() } },
-        process.env.SECRET_JWT
-        // { expiresIn: "5m" }
+        process.env.SECRET_JWT,
+        { expiresIn: "10m" }
       );
 
       await UserModel.updateOne({ email }, { token_to_reset_password });
