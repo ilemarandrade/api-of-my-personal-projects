@@ -6,7 +6,7 @@ const v1RouterAuth = require("./v1/routes/auth");
 const v1RouterWallet = require("./v1/routes/wallet");
 const { verifyUserToken } = require("./midlewares/verify_user_token");
 
-const mongoString = process.env.DATABASE_URL;
+const mongoString = process.env.MONGO_URL;
 const app = express();
 const PORT = process.env.PORT || 8081;
 const { transporter } = require("./utils/sendEmail");
