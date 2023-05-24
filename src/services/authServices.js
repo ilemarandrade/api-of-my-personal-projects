@@ -6,6 +6,7 @@ import UserModel from '../models/User.js';
 import handleTraductions from '../utils/handleTraductions.js';
 import { transporter } from '../utils/sendEmail.js';
 import recoveryPasswordMail from '../constants/mails/recoveryPassword.js';
+import { encrypt } from '../utils/encryptPassword.js';
 
 const login = async ({ user, lang }) => {
   const { t } = handleTraductions(lang);
@@ -167,7 +168,6 @@ const newPassword = async ({
   token,
 }) => {
   const { t } = handleTraductions(lang);
-
   try {
     if (password !== confirmation_password) {
       return {
