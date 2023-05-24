@@ -1,12 +1,10 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import jwt from 'jsonwebtoken';
 import AccountModel from '../models/Account.js';
 import UserModel from '../models/User.js';
 import handleTraductions from '../utils/handleTraductions.js';
 import { transporter } from '../utils/sendEmail.js';
 import recoveryPasswordMail from '../constants/mails/recoveryPassword.js';
-import { encrypt } from '../utils/encryptPassword.js';
+import { encrypt, compare } from '../utils/encryptPassword.js';
 
 const login = async ({ user, lang }) => {
   const { t } = handleTraductions(lang);
