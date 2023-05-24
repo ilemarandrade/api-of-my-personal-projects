@@ -1,15 +1,15 @@
-const jwt = require("jsonwebtoken");
-const handleTraductions = require("../utils/handleTraductions");
+import jwt from 'jsonwebtoken';
+import handleTraductions from '../utils/handleTraductions.js';
 
 const verifyUserToken = async (req, res, next) => {
   const { lang } = req.headers;
   const { t } = handleTraductions(lang);
 
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization.split(' ')[1];
 
     if (!token) {
-      throw new Error("Authentication failed!");
+      throw new Error('Authentication failed!');
     }
 
     const verified = jwt.verify(token, process.env.SECRET_JWT);
@@ -19,14 +19,12 @@ const verifyUserToken = async (req, res, next) => {
       req.token = token;
       next();
     } else {
-      res.status(401).send({ message: t("message.authorization_incorrect") });
+      res.status(401).send({ message: t('message.authorization_incorrect') });
     }
   } catch (err) {
     console.log(err);
-    res.status(400).send({ message: t("message.error_unexpected") });
+    res.status(400).send({ message: t('message.error_unexpected') });
   }
 };
 
-module.exports = {
-  verifyUserToken,
-};
+export default verifyUserToken;

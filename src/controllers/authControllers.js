@@ -1,6 +1,6 @@
-const authServices = require("../services/authServices");
-const jwt = require("jsonwebtoken");
-const handleTraductions = require("../utils/handleTraductions");
+import authServices from '../services/authServices.js';
+import jwt from 'jsonwebtoken';
+import handleTraductions from '../utils/handleTraductions.js';
 
 const login = async (req, res) => {
   const { lang } = req.headers;
@@ -10,7 +10,7 @@ const login = async (req, res) => {
   res.status(statusCode).send(response);
 };
 
-const user_Information = async (req, res) => {
+const user_information = async (req, res) => {
   const { lang } = req.headers;
   const { t } = handleTraductions(lang);
 
@@ -21,7 +21,7 @@ const user_Information = async (req, res) => {
     res.status(200).send(verified);
   } catch (err) {
     console.log(err);
-    res.status(401).send({ message: t("message.authorization_incorrect") });
+    res.status(401).send({ message: t('message.authorization_incorrect') });
   }
 };
 
@@ -75,11 +75,11 @@ const newPassword = async (req, res) => {
   res.status(statusCode).send(response);
 };
 
-module.exports = {
-  login,
-  createNewUser,
-  updateUser,
-  user_Information,
-  forgotPassword,
+export default {
   newPassword,
+  forgotPassword,
+  login,
+  updateUser,
+  createNewUser,
+  user_information,
 };

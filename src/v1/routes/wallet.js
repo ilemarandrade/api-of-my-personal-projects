@@ -1,16 +1,16 @@
-const express = require("express");
-const walletController = require("../../controllers/walletControllers");
+import express from 'express';
+import walletController from '../../controllers/walletControllers.js';
 
 const router = express.Router();
 
-router.get("/check_balance", walletController.check_balance);
+router.get('/check_balance', walletController.check_balance);
 
-router.get("/movements", walletController.movements);
+router.get('/movements', walletController.movements);
 
-router.put("/recharge", walletController.recharge);
+router.put('/recharge', walletController.recharge);
 
-router.put("/pay", walletController.pay);
+router.put('/pay', walletController.pay);
 
-router.put("/delete_movement", walletController.delete_movement);
+router.put('/delete_movement', walletController.delete_movement);
 
-module.exports = router;
+export default router;

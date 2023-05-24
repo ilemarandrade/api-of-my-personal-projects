@@ -1,4 +1,4 @@
-const walletServices = require("../services/walletServices");
+import walletServices from '../services/walletServices.js';
 
 const check_balance = async (req, res) => {
   const { lang } = req.headers;
@@ -67,10 +67,4 @@ const delete_movement = async (req, res) => {
   return res.status(statusCode).send(response);
 };
 
-module.exports = {
-  check_balance,
-  recharge,
-  pay,
-  movements,
-  delete_movement,
-};
+export default { recharge, check_balance, movements, pay, delete_movement };

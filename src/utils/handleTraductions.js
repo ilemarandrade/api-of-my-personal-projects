@@ -1,11 +1,11 @@
-const en = require("../constants/traductions/en");
-const es = require("../constants/traductions/es");
+import en from '../constants/traductions/en.js';
+import es from '../constants/traductions/es.js';
 
-const handleTraductions = (lang = "en") => {
+const handleTraductions = (lang = 'en') => {
   const traductions = { en, es }[lang];
 
   const t = (value) => {
-    const valueSplit = value.split(".");
+    const valueSplit = value.split('.');
     let findValue;
 
     valueSplit.reduce((acumulator, key, index, array) => {
@@ -14,13 +14,13 @@ const handleTraductions = (lang = "en") => {
         return acumulator;
       }
 
-      return acumulator[key] || "";
+      return acumulator[key] || '';
     }, traductions);
 
-    return findValue || "";
+    return findValue || '';
   };
 
   return { t };
 };
 
-module.exports = handleTraductions;
+export default handleTraductions;

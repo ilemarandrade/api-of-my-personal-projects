@@ -1,8 +1,7 @@
-require("dotenv").config();
-const AccountModel = require("../models/Account");
-const moment = require("moment");
-const { formatNumberDecimal } = require("../utils/formatNumberDecimal");
-const handleTraductions = require("../utils/handleTraductions");
+import AccountModel from '../models/Account.js';
+import moment from 'moment';
+import formatNumberDecimal from '../utils/formatNumberDecimal.js';
+import handleTraductions from '../utils/handleTraductions.js';
 
 const check_balance = async ({ user_id, lang }) => {
   const { t } = handleTraductions(lang);
@@ -18,14 +17,14 @@ const check_balance = async ({ user_id, lang }) => {
     } else {
       return {
         statusCode: 400,
-        response: { message: t("message.error_unexpected") },
+        response: { message: t('message.error_unexpected') },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -40,7 +39,7 @@ const movements = async ({
   const { t } = handleTraductions(lang);
   const initList = page * rowsPerPage - rowsPerPage;
   const endList = page * rowsPerPage;
-  const isRemovedMoves = removedMoves === "true";
+  const isRemovedMoves = removedMoves === 'true';
 
   try {
     const Account = await AccountModel.findOne({ user_id });
@@ -61,14 +60,14 @@ const movements = async ({
     } else {
       return {
         statusCode: 400,
-        response: { message: t("message.error_unexpected") },
+        response: { message: t('message.error_unexpected') },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -87,7 +86,7 @@ const recharge = async ({ user_id, payload, lang }) => {
     Account.available_balance = creditToRemainingBalance;
     Account.movements.unshift({
       date: moment().unix(),
-      type: "credit",
+      type: 'credit',
       amount: amountToSubtract,
       remaining_balance: creditToRemainingBalance,
       concept,
@@ -103,7 +102,7 @@ const recharge = async ({ user_id, payload, lang }) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -123,14 +122,14 @@ const pay = async ({ user_id, payload, lang }) => {
       return {
         statusCode: 400,
         response: {
-          message: t("message.pay.amount_is_too_much"),
+          message: t('message.pay.amount_is_too_much'),
         },
       };
     } else {
       Account.available_balance = debitToRemainingBalance;
       Account.movements.unshift({
         date: moment().unix(),
-        type: "debit",
+        type: 'debit',
         amount: -amountToAdd,
         remaining_balance: debitToRemainingBalance,
         concept,
@@ -147,7 +146,7 @@ const pay = async ({ user_id, payload, lang }) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -170,7 +169,7 @@ const delete_movement = async ({ user_id, payload, lang }) => {
 
       const { type, amount, concept } = movementToDelete;
 
-      const isCredit = type === "credit";
+      const isCredit = type === 'credit';
 
       const amountNew = isCredit ? -amount : amount * -1;
 
@@ -178,7 +177,7 @@ const delete_movement = async ({ user_id, payload, lang }) => {
         Account.available_balance - Number(parseFloat(amount).toFixed(2));
       Account.movements.unshift({
         date: moment().unix(),
-        type: isCredit ? "debit" : "credit",
+        type: isCredit ? 'debit' : 'credit',
         amount: amountNew,
         remaining_balance: Account.available_balance,
         concept,
@@ -195,7 +194,7 @@ const delete_movement = async ({ user_id, payload, lang }) => {
       return {
         statusCode: 400,
         response: {
-          message: t("message.delete_movement.can_not_remove"),
+          message: t('message.delete_movement.can_not_remove'),
         },
       };
     }
@@ -203,15 +202,9 @@ const delete_movement = async ({ user_id, payload, lang }) => {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
 
-module.exports = {
-  check_balance,
-  recharge,
-  pay,
-  movements,
-  delete_movement,
-};
+export default { recharge, check_balance, movements, pay, delete_movement };

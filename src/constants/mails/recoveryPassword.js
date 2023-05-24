@@ -1,4 +1,6 @@
-require("dotenv").config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const recoveryPassword = {
   en: (token_to_reset_password) => `
@@ -22,4 +24,4 @@ const recoveryPassword = {
   </div>`,
 };
 
-module.exports = recoveryPassword;
+export default recoveryPassword;
