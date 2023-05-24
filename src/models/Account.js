@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from 'mongoose';
 
 const Account = new Schema({
   user_id: {
@@ -13,8 +13,8 @@ const Account = new Schema({
     {
       date: String,
       type: {
-        enum: ["credit", "debit"],
-        message: "{VALUE} is not supported",
+        enum: ['credit', 'debit'],
+        message: '{VALUE} is not supported',
         type: String,
       },
       amount: Number,
@@ -28,4 +28,4 @@ const Account = new Schema({
   ],
 });
 
-module.exports = model("Account", Account);
+export default model('Account', Account);

@@ -1,20 +1,22 @@
-require("dotenv").config();
-
-const jwt = require("jsonwebtoken");
-const AccountModel = require("../models/Account");
-const UserModel = require("../models/User");
-const handleTraductions = require("../utils/handleTraductions");
-const { transporter } = require("../utils/sendEmail");
-const recoveryPasswordMail = require("../constants/mails/recoveryPassword");
+import dotenv from 'dotenv';
+dotenv.config();
+import jwt from 'jsonwebtoken';
+import AccountModel from '../models/Account.js';
+import UserModel from '../models/User.js';
+import handleTraductions from '../utils/handleTraductions.js';
+import { transporter } from '../utils/sendEmail.js';
+import recoveryPasswordMail from '../constants/mails/recoveryPassword.js';
+import { encrypt } from '../utils/encryptPassword.js';
 
 const login = async ({ user, lang }) => {
   const { t } = handleTraductions(lang);
 
   try {
-    const existUser = await UserModel.findOne({ ...user });
+    const User = await UserModel.findOne({ email: user.email });
+    const isCorrectPassword = await compare(user.password, User.password);
 
-    if (existUser) {
-      const { _id, name, lastname, email, phone, document, lang } = existUser;
+    if (isCorrectPassword) {
+      const { _id, name, lastname, email, phone, document, lang } = User;
 
       let token = jwt.sign(
         {
@@ -38,14 +40,14 @@ const login = async ({ user, lang }) => {
     } else {
       return {
         statusCode: 400,
-        response: { message: t("message.login.wrong.data") },
+        response: { message: t('message.login.wrong_data') },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -62,11 +64,14 @@ const createUser = async ({ user, lang }) => {
     if (userExistWithThisEmail.length || userExistWithThisDocument.length) {
       return {
         statusCode: 400,
-        response: { message: t("message.sign_up.user_exist") },
+        response: { message: t('message.sign_up.user_exist') },
       };
     } else {
+      const passwordEncrypt = await encrypt(user.password);
+
       const userToSend = new UserModel({
         ...user,
+        password: passwordEncrypt,
       });
 
       const createUserAccount = new AccountModel({
@@ -78,12 +83,12 @@ const createUser = async ({ user, lang }) => {
       await userToSend.save();
       await createUserAccount.save();
 
-      return { statusCode: 200, response: t("message.create_user.success") };
+      return { statusCode: 200, response: t('message.create_user.success') };
     }
   } catch (error) {
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -98,18 +103,18 @@ const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
     if (User.modifiedCount) {
       return {
         statusCode: 200,
-        response: { message: t("message.success") },
+        response: { message: t('message.success') },
       };
     } else {
       return {
         statusCode: 400,
-        response: { message: t("message.error_unexpected") },
+        response: { message: t('message.error_unexpected') },
       };
     }
   } catch (error) {
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -124,34 +129,34 @@ const forgotPassword = async ({ lang, email }) => {
       let token_to_reset_password = jwt.sign(
         { User: { _id: User._id.toString() } },
         process.env.SECRET_JWT,
-        { expiresIn: "10m" }
+        { expiresIn: '10m' }
       );
 
       await UserModel.updateOne({ email }, { token_to_reset_password });
 
       await transporter.sendMail({
-        from: "Wallet Andrade", // sender address
+        from: 'Wallet Andrade', // sender address
         to: email, // list of receivers
-        subject: t("message.forgot_password.title_email"), // Subject line is like main title
-        text: t("message.forgot_password.title_email"), // plain text body
+        subject: t('message.forgot_password.title_email'), // Subject line is like main title
+        text: t('message.forgot_password.title_email'), // plain text body
         html: recoveryPasswordMail[lang](token_to_reset_password), // html body
       });
 
       return {
         statusCode: 200,
-        response: { message: t("message.forgot_password.check_your_email") },
+        response: { message: t('message.forgot_password.check_your_email') },
       };
     } else {
       return {
         statusCode: 400,
-        response: { message: t("message.login.wrong.data") },
+        response: { message: t('message.login.wrong.data') },
       };
     }
   } catch (error) {
     console.log(error);
     return {
       statusCode: 400,
-      response: { message: t("message.error_unexpected") },
+      response: { message: t('message.error_unexpected') },
     };
   }
 };
@@ -163,13 +168,12 @@ const newPassword = async ({
   token,
 }) => {
   const { t } = handleTraductions(lang);
-
   try {
     if (password !== confirmation_password) {
       return {
         statusCode: 400,
         response: {
-          message: t("message.forgot_password.passwords_do_not_match"),
+          message: t('message.forgot_password.passwords_do_not_match'),
         },
       };
     }
@@ -181,42 +185,37 @@ const newPassword = async ({
     const { token_to_reset_password } = await UserModel.findById(_id);
 
     if (token_to_reset_password === token) {
+      const newPasswordFormat = await encrypt(password);
       const User = await UserModel.findByIdAndUpdate(_id, {
-        password,
-        token_to_reset_password: "",
+        password: newPasswordFormat,
+        token_to_reset_password: '',
       });
 
       if (User) {
         return {
           statusCode: 200,
           response: {
-            message: t("message.forgot_password.success_update_password"),
+            message: t('message.forgot_password.success_update_password'),
           },
         };
       } else {
         return {
           statusCode: 400,
-          response: { message: t("message.error_unexpected") },
+          response: { message: t('message.error_unexpected') },
         };
       }
     } else {
-      throw "Expired token you must request again to recover password";
+      throw 'Expired token you must request again to recover password';
     }
   } catch (err) {
     console.log(err);
     return {
       statusCode: 400,
       response: {
-        message: t("message.forgot_password.expired_token"),
+        message: t('message.forgot_password.expired_token'),
       },
     };
   }
 };
 
-module.exports = {
-  login,
-  createUser,
-  updateUser,
-  forgotPassword,
-  newPassword,
-};
+export default { login, createUser, updateUser, forgotPassword, newPassword };

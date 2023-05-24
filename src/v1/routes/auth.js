@@ -1,23 +1,23 @@
-const express = require("express");
-const authController = require("../../controllers/authControllers");
-const { verifyUserToken } = require("../../midlewares/verify_user_token");
+import express from 'express';
+import authController from '../../controllers/authControllers.js';
+import verifyUserToken from '../../midlewares/verify_user_token.js';
 
 const router = express.Router();
 
-router.post("/login", authController.login);
+router.post('/login', authController.login);
 
 router.get(
-  "/user_information",
+  '/user_information',
   verifyUserToken,
-  authController.user_Information
+  authController.user_information
 );
 
-router.post("/signup", authController.createNewUser);
+router.post('/signup', authController.createNewUser);
 
-router.put("/update_user", verifyUserToken, authController.updateUser);
+router.put('/update_user', verifyUserToken, authController.updateUser);
 
-router.post("/forgot_password", authController.forgotPassword);
+router.post('/forgot_password', authController.forgotPassword);
 
-router.put("/new_password", authController.newPassword);
+router.put('/new_password', authController.newPassword);
 
-module.exports = router;
+export default router;

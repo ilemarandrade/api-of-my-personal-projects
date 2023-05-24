@@ -1,4 +1,4 @@
-const { Schema, model, default: mongoose } = require("mongoose");
+import { Schema, model } from 'mongoose';
 
 const User = new Schema({
   name: {
@@ -7,7 +7,7 @@ const User = new Schema({
   },
   lastname: {
     type: String,
-    default: "",
+    default: '',
   },
   email: {
     type: String,
@@ -23,13 +23,13 @@ const User = new Schema({
   },
   phone: {
     type: String,
-    default: "",
+    default: '',
   },
   lang: {
     type: String,
     default: null,
   },
-  token_to_reset_password: { type: String, default: "" },
+  token_to_reset_password: { type: String, default: '' },
 });
 
-module.exports = model("User", User);
+export default model('User', User);
