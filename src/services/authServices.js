@@ -11,10 +11,11 @@ const login = async ({ user, lang }) => {
   const { t } = handleTraductions(lang);
 
   try {
-    const existUser = await UserModel.findOne({ ...user });
+    const User = await UserModel.findOne({ email: user.email });
+    const isCorrectPassword = await compare(user.password, User.password);
 
-    if (existUser) {
-      const { _id, name, lastname, email, phone, document, lang } = existUser;
+    if (isCorrectPassword) {
+      const { _id, name, lastname, email, phone, document, lang } = User;
 
       let token = jwt.sign(
         {
@@ -38,7 +39,7 @@ const login = async ({ user, lang }) => {
     } else {
       return {
         statusCode: 400,
-        response: { message: t('message.login.wrong.data') },
+        response: { message: t('message.login.wrong_data') },
       };
     }
   } catch (error) {
@@ -65,8 +66,11 @@ const createUser = async ({ user, lang }) => {
         response: { message: t('message.sign_up.user_exist') },
       };
     } else {
+      const passwordEncrypt = await encrypt(user.password);
+
       const userToSend = new UserModel({
         ...user,
+        password: passwordEncrypt,
       });
 
       const createUserAccount = new AccountModel({
@@ -123,8 +127,8 @@ const forgotPassword = async ({ lang, email }) => {
     if (User) {
       let token_to_reset_password = jwt.sign(
         { User: { _id: User._id.toString() } },
-        process.env.SECRET_JWT
-        // { expiresIn: '10m' }
+        process.env.SECRET_JWT,
+        { expiresIn: '10m' }
       );
 
       await UserModel.updateOne({ email }, { token_to_reset_password });
@@ -181,8 +185,9 @@ const newPassword = async ({
     const { token_to_reset_password } = await UserModel.findById(_id);
 
     if (token_to_reset_password === token) {
+      const newPasswordFormat = await encrypt(password);
       const User = await UserModel.findByIdAndUpdate(_id, {
-        password,
+        password: newPasswordFormat,
         token_to_reset_password: '',
       });
 
