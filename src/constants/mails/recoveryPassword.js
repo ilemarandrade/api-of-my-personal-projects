@@ -1,7 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 const recoveryPassword = {
   en: (token_to_reset_password) => `
   <div style="text-align: center; font-family: Arial; font-size: 20px;">
