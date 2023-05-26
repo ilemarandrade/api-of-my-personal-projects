@@ -8,12 +8,12 @@ import { transporter } from './utils/sendEmail.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const mongoString = process.env.MONGO_URL;
+const mongoString: string = process.env.MONGO_URL || '/';
 const app = express();
 const PORT = process.env.PORT || 8081;
 
 // verify connection configuration
-transporter.verify(function (error, success) {
+transporter.verify(function (error) {
   if (error) {
     console.log(error);
   } else {
