@@ -1,4 +1,8 @@
-const es = {
+export type TypesTraductions = {
+  [key: string]: string | TypesTraductions;
+};
+
+const es: TypesTraductions = {
   message: {
     error_unexpected: 'Ha ocurrido un error inesperado',
     success: 'Solicitud Exitosa!',
