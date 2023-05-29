@@ -1,6 +1,22 @@
 import { Schema, model } from 'mongoose';
 
-const Account = new Schema({
+export interface IMovements {
+  date: number;
+  type: 'credit' | 'debit';
+  amount: number;
+  remaining_balance: number;
+  concept: string;
+  wasRemoved: boolean;
+  _id?: number;
+}
+
+interface IAccount {
+  user_id: Schema.Types.ObjectId;
+  available_balance: number;
+  movements: IMovements[];
+}
+
+const SchemaAccount = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -28,4 +44,6 @@ const Account = new Schema({
   ],
 });
 
-export default model('Account', Account);
+const Account = model<IAccount>('Account', SchemaAccount);
+
+export default Account;
