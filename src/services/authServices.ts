@@ -5,7 +5,7 @@ import handleTraductions from '../utils/handleTraductions.js';
 import { transporter } from '../utils/sendEmail.js';
 import recoveryPasswordMail from '../constants/mails/recoveryPassword.js';
 import { encrypt, compare } from '../utils/encryptPassword.js';
-import { Lang } from '../models/Request.js';
+import { IResponseServices, Lang } from '../models/Request.js';
 
 interface ILogin {
   user: {
@@ -15,7 +15,15 @@ interface ILogin {
   lang: Lang;
 }
 
-const login = async ({ user, lang }: ILogin) => {
+interface IResponseLogin {
+  jwt?: string;
+  message?: string;
+}
+
+const login = async ({
+  user,
+  lang,
+}: ILogin): Promise<IResponseServices<IResponseLogin>> => {
   const { t } = handleTraductions(lang);
 
   try {
@@ -68,7 +76,10 @@ interface ICreateUser {
   lang: Lang;
 }
 
-const createUser = async ({ user, lang }: ICreateUser) => {
+const createUser = async ({
+  user,
+  lang,
+}: ICreateUser): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
 
   try {
@@ -99,7 +110,10 @@ const createUser = async ({ user, lang }: ICreateUser) => {
       await userToSend.save();
       await createUserAccount.save();
 
-      return { statusCode: 200, response: t('message.create_user.success') };
+      return {
+        statusCode: 200,
+        response: { message: t('message.create_user.success') },
+      };
     }
   } catch (error) {
     return {
@@ -125,7 +139,7 @@ const updateUser = async ({
   prevUserData,
   dataToUpdateUser,
   langCurrent,
-}: IUpdateUser) => {
+}: IUpdateUser): Promise<IResponseServices> => {
   const { _id } = prevUserData;
   const { t } = handleTraductions(dataToUpdateUser.lang || langCurrent);
 
@@ -156,7 +170,10 @@ interface IForgotPassword {
   email: string;
 }
 
-const forgotPassword = async ({ lang, email }: IForgotPassword) => {
+const forgotPassword = async ({
+  lang,
+  email,
+}: IForgotPassword): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
 
   try {
@@ -216,7 +233,7 @@ const newPassword = async ({
   password,
   confirmation_password,
   token,
-}: INewPassword) => {
+}: INewPassword): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
 
   try {
