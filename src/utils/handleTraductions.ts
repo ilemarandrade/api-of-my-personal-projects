@@ -5,7 +5,7 @@ const handleTraductions = (lang: string = 'en') => {
   const traductions: { [key: string]: TypesTraductions } = { en, es };
   const selectedTraductions = traductions[lang];
 
-  const t = (value: string) => {
+  const t = (value: string): string => {
     const valueSplit = value.split('.');
     let findValue: string | TypesTraductions | undefined;
 
@@ -14,7 +14,7 @@ const handleTraductions = (lang: string = 'en') => {
       return acumulator;
     }, selectedTraductions);
 
-    return findValue || '';
+    return (findValue as string) || '';
   };
 
   return { t };

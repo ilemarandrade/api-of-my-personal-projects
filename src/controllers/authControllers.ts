@@ -20,7 +20,7 @@ const user_information = async (req: IRequest, res: Response) => {
     const token = req.token;
     if (token) {
       const verified = jwt.verify(token, process.env.SECRET_JWT as string);
-      res.status(200).send(verified);
+      return res.status(200).send(verified);
     }
 
     throw 'Token not exist';

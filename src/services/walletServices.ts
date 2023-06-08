@@ -89,7 +89,7 @@ const movements = async ({
 };
 
 interface IRecharge extends ICommonServices {
-  payload: { amount: number; concept: string };
+  payload: { amount: string; concept: string };
 }
 
 interface IBalanceModifiersResponse extends IResponseCheckBalance {}
@@ -109,7 +109,7 @@ const recharge = async ({
 
     if (Account) {
       const creditToRemainingBalance = formatNumberDecimal(
-        Account.available_balance + amountToAdd
+        `${Account.available_balance + amountToAdd}`
       );
 
       Account.available_balance = creditToRemainingBalance;
@@ -157,7 +157,7 @@ const pay = async ({
 
     if (Account) {
       const debitToRemainingBalance = formatNumberDecimal(
-        Account.available_balance - amountToSubtract
+        `${Account.available_balance - amountToSubtract}`
       );
 
       if (debitToRemainingBalance < 0) {
