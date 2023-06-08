@@ -64,10 +64,8 @@ const movements = async ({
 
     if (Account?.movements) {
       const movements = isRemovedMoves
-        ? Account.movements.filter(
-            ({ wasRemoved }) => wasRemoved === isRemovedMoves
-          )
-        : Account.movements;
+        ? Account.movements.filter(({ wasRemoved }) => wasRemoved)
+        : Account.movements.filter(({ wasRemoved }) => !wasRemoved);
 
       return {
         statusCode: 200,
@@ -198,7 +196,7 @@ const pay = async ({
 };
 
 interface IDeleteMovement extends ICommonServices {
-  payload: { movement_id: number };
+  payload: { movement_id: string };
 }
 
 const delete_movement = async ({
@@ -214,16 +212,12 @@ const delete_movement = async ({
 
     if (Account) {
       const movementToDelete = Account.movements.filter(
-        ({ _id }) =>
-          Number((_id as number as unknown as string).toString()) ===
-          movement_id
+        ({ _id }) => _id?.toString() === movement_id
       )[0]; // get movement to delete
 
       if (Account.available_balance >= movementToDelete.amount) {
         Account.movements = Account.movements.filter(
-          ({ _id }) =>
-            Number((_id as number as unknown as string).toString()) !==
-            movement_id
+          ({ _id }) => _id?.toString() !== movement_id
         ); // update movements
 
         const { type, amount, concept } = movementToDelete;
@@ -233,6 +227,7 @@ const delete_movement = async ({
         const amountNew = isCredit ? -amount : amount * -1;
 
         Account.available_balance = Account.available_balance - amount;
+
         Account.movements.unshift({
           date: moment().unix(),
           type: isCredit ? 'debit' : 'credit',

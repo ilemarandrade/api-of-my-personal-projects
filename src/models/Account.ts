@@ -7,7 +7,7 @@ export interface IMovements {
   remaining_balance: number;
   concept: string;
   wasRemoved: boolean;
-  _id?: number;
+  _id?: Schema.Types.ObjectId;
 }
 
 interface IAccount {
