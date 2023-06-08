@@ -1,8 +1,9 @@
-import dotenv from 'dotenv';
+interface IRecoverPassword {
+  en: (t: string) => string;
+  es: (t: string) => string;
+}
 
-dotenv.config();
-
-const recoveryPassword = {
+const recoveryPassword: IRecoverPassword = {
   en: (token_to_reset_password) => `
   <div style="text-align: center; font-family: Arial; font-size: 20px;">
     <p>To change your password very easily, you just have to click the new password button and follow the steps we indicate. This way you can continue enjoying the Wallet Andrade app with total security and comfort. 😊</p>

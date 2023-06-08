@@ -1,45 +1,66 @@
 import jwt from 'jsonwebtoken';
 import AccountModel from '../models/Account.js';
-import UserModel from '../models/User.js';
+import UserModel, { IUser } from '../models/User.js';
 import handleTraductions from '../utils/handleTraductions.js';
 import { transporter } from '../utils/sendEmail.js';
 import recoveryPasswordMail from '../constants/mails/recoveryPassword.js';
 import { encrypt, compare } from '../utils/encryptPassword.js';
+import { IResponseServices, Lang } from '../models/Request.js';
 
-const login = async ({ user, lang }) => {
+interface ILogin {
+  user: {
+    password: string;
+    email: string;
+  };
+  lang: Lang;
+}
+
+interface IResponseLogin {
+  jwt?: string;
+  message?: string;
+}
+
+const login = async ({
+  user,
+  lang,
+}: ILogin): Promise<IResponseServices<IResponseLogin>> => {
   const { t } = handleTraductions(lang);
 
   try {
-    const User = await UserModel.findOne({ email: user.email });
-    const isCorrectPassword = await compare(user.password, User.password);
+    const User: IUser | null = await UserModel.findOne({ email: user.email });
+    if (User) {
+      const isCorrectPassword = await compare(user.password, User.password);
 
-    if (isCorrectPassword) {
-      const { _id, name, lastname, email, phone, document, lang } = User;
+      if (isCorrectPassword) {
+        const { _id, name, lastname, email, phone, document, lang } = User;
 
-      let token = jwt.sign(
-        {
-          user: {
-            name,
-            lastname,
-            email,
-            phone,
-            document,
-            lang,
-            _id: _id.toString(),
+        let token = jwt.sign(
+          {
+            user: {
+              name,
+              lastname,
+              email,
+              phone,
+              document,
+              lang,
+              _id: _id.toString(),
+            },
           },
-        },
-        process.env.SECRET_JWT
-      );
+          process.env.SECRET_JWT as string
+        );
 
-      return {
-        statusCode: 200,
-        response: { jwt: token },
-      };
+        return {
+          statusCode: 200,
+          response: { jwt: token },
+        };
+      } else {
+        return {
+          statusCode: 400,
+          response: { message: t('message.login.wrong_data') },
+        };
+      }
     } else {
-      return {
-        statusCode: 400,
-        response: { message: t('message.login.wrong_data') },
-      };
+      throw 'User not exist';
     }
   } catch (error) {
     console.log(error);
@@ -50,7 +71,15 @@ const login = async ({ user, lang }) => {
   }
 };
 
-const createUser = async ({ user, lang }) => {
+interface ICreateUser {
+  user: IUser;
+  lang: Lang;
+}
+
+const createUser = async ({
+  user,
+  lang,
+}: ICreateUser): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
 
   try {
@@ -81,7 +110,10 @@ const createUser = async ({ user, lang }) => {
       await userToSend.save();
       await createUserAccount.save();
 
-      return { statusCode: 200, response: t('message.create_user.success') };
+      return {
+        statusCode: 200,
+        response: { message: t('message.create_user.success') },
+      };
     }
   } catch (error) {
     return {
@@ -91,7 +123,23 @@ const createUser = async ({ user, lang }) => {
   }
 };
 
-const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
+interface IUpdateUser {
+  prevUserData: IUser;
+  dataToUpdateUser: {
+    name?: string;
+    lastname?: string;
+    document?: string;
+    phone?: string;
+    lang?: Lang;
+  };
+  langCurrent: Lang;
+}
+
+const updateUser = async ({
+  prevUserData,
+  dataToUpdateUser,
+  langCurrent,
+}: IUpdateUser): Promise<IResponseServices> => {
   const { _id } = prevUserData;
   const { t } = handleTraductions(dataToUpdateUser.lang || langCurrent);
 
@@ -117,7 +165,15 @@ const updateUser = async ({ prevUserData, dataToUpdateUser, langCurrent }) => {
   }
 };
 
-const forgotPassword = async ({ lang, email }) => {
+interface IForgotPassword {
+  lang: Lang;
+  email: string;
+}
+
+const forgotPassword = async ({
+  lang,
+  email,
+}: IForgotPassword): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
 
   try {
@@ -126,7 +182,7 @@ const forgotPassword = async ({ lang, email }) => {
     if (User) {
       let token_to_reset_password = jwt.sign(
         { User: { _id: User._id.toString() } },
-        process.env.SECRET_JWT,
+        process.env.SECRET_JWT as string,
         { expiresIn: '10m' }
       );
 
@@ -159,13 +215,27 @@ const forgotPassword = async ({ lang, email }) => {
   }
 };
 
+interface INewPassword {
+  lang: Lang;
+  password: string;
+  confirmation_password: string;
+  token: string;
+}
+
+interface JwtPayload {
+  User: {
+    _id: string;
+  };
+}
+
 const newPassword = async ({
   lang,
   password,
   confirmation_password,
   token,
-}) => {
+}: INewPassword): Promise<IResponseServices> => {
   const { t } = handleTraductions(lang);
+
   try {
     if (password !== confirmation_password) {
       return {
@@ -178,11 +248,11 @@ const newPassword = async ({
 
     const {
       User: { _id },
-    } = jwt.verify(token, process.env.SECRET_JWT);
+    } = jwt.verify(token, process.env.SECRET_JWT as string) as JwtPayload;
 
-    const { token_to_reset_password } = await UserModel.findById(_id);
+    const User = await UserModel.findById(_id);
 
-    if (token_to_reset_password === token) {
+    if (User?.token_to_reset_password === token) {
       const newPasswordFormat = await encrypt(password);
       const User = await UserModel.findByIdAndUpdate(_id, {
         password: newPasswordFormat,

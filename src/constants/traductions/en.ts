@@ -1,4 +1,6 @@
-const en = {
+import { TypesTraductions } from './es';
+
+const en: TypesTraductions = {
   message: {
     error_unexpected: 'An unexpected error has occurred',
     success: 'Request Successful!',
